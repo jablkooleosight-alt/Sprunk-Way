@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SprunkWay RP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #00ff41;
+            --dark-green: #008f11;
+            --bg-dark: #0a0a0a;
+            --card-bg: #151515;
+            --text-white: #e0e0e0;
+            --discord-blurple: #5865F2;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Navigace */
+        nav {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--dark-green);
+        }
+
+        nav button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        nav button:hover, nav button.active {
+            color: var(--primary-green);
+            text-shadow: 0 0 10px var(--primary-green);
+        }
+
+        /* Sekce */
+        .page {
+            display: none;
+            padding: 50px 10%;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tým - Karty */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .member-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border-bottom: 3px solid var(--dark-green);
+            text-align: center;
+            transition: 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+            border-bottom-color: var(--primary-green);
+            box-shadow: 0 10px 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 2px solid var(--dark-green);
+        }
+
+        .role-tag {
+            font-size: 11px;
+            color: var(--primary-green);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .discord-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--discord-blurple);
+            font-weight: 600;
+        }
+
+        h2, h3 { color: var(--primary-green); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 40px; }
+
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="showPage('o-nas')" id="btn-o-nas" class="active">O NÁS</button>
+    <button onclick="showPage('tym')">NÁŠ TÝM</button>
+    <button onclick="showPage('pravidla')">PRAVIDLA</button>
+    <button onclick="window.open('https://odkaz-na-zakonik.cz', '_blank')">ZÁKONÍK</button>
+</nav>
+
+<!-- STRÁNKA: O NÁS -->
+<div id="o-nas" class="page active">
+    <h1>Vítejte v <span style="color: var(--primary-green);">SprunkWay</span></h1>
+    <p>Projekt SprunkWay je unikátní RP zážitek postavený na komunitě a kvalitním roleplayi.</p>
+</div>
+
+<!-- STRÁNKA: NÁŠ TÝM -->
+<div id="tym" class="page">
+    <h1>Náš Tým</h1>
+    
+    <div id="section-Vedení">
+        <h3>Vedení Projektu</h3>
+        <div class="team-grid" id="grid-Vedení"></div>
+    </div>
+
+    <div id="section-Admin">
+        <h3>Admin Team</h3>
+        <div class="team-grid" id="grid-Admin"></div>
+    </div>
+
+    <div id="section-Developer">
+        <h3>Developer Team</h3>
+        <div class="team-grid" id="grid-Developer"></div>
+    </div>
+
+    <div id="section-Allowtester">
+        <h3>Allowtesters</h3>
+        <div class="team-grid" id="grid-Allowtester"></div>
+    </div>
+</div>
+
+<!-- STRÁNKA: PRAVIDLA -->
+<div id="pravidla" class="page">
+    <h1>Pravidla Serveru</h1>
+    <p>Zde budou vypsána pravidla vašeho projektu...</p>
+</div>
+
+<script>
+    // Priorita rolí (Founder/Co-Founder + AL Testeři)
+    const rolePriority = {
+        "Founder": 1,
+        "Co-Founder": 2,
+        "Managment": 3,
+        "Community Managment": 4,
+        "Head of Staff": 5,
+        "Senior Admin": 6,
+        "Admin": 7,
+        "Trial Admin": 8,
+        "Leader Developer": 9,
+        "Senior Developer": 10,
+        "Junior Developer": 11,
+        "Head of AL tester": 12,
+        "Senior AL tester": 13,
+        "Trial AL tester": 14
+    };
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if (window.event) window.event.currentTarget.classList.add('active');
+    }
+
+    // Funkce pro načtení dat z Discordu (přes tvůj backend/worker)
+    async function fetchDiscordTeam() {
+        try {
+            // ZDE BUDE TVÁ URL NA SUPABASE NEBO WORKER (viz návod níže)
+            // Pro testování zde nechávám ukázková data, která se pak nahradí API voláním
+            const response = await fetch('TVOJE_API_URL'); 
+            const teamData = await response.json();
+            renderTeam(teamData);
+        } catch (e) {
+            console.log("Zatím není připojeno API, zobrazuji demo.");
+            renderTeam([
+                { nick: "Zakladatel", role: "Founder", avatar: "https://via.placeholder.com/80", discordId: "123456" },
+                { nick: "Tester", role: "Senior AL tester", avatar: "https://via.placeholder.com/80", discordId: "78910" }
+            ]);
+        }
+    }
+
+    function renderTeam(teamData) {
+        document.getElementById('grid-Vedení').innerHTML = "";
+        document.getElementById('grid-Admin').innerHTML = "";
+        document.getElementById('grid-Developer').innerHTML = "";
+        document.getElementById('grid-Allowtester').innerHTML = "";
+
+        teamData.sort((a, b) => (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99));
+
+        teamData.forEach(member => {
+            let category = "";
+            if (["Founder", "Co-Founder", "Managment", "Community Managment", "Head of Staff"].includes(member.role)) category = "Vedení";
+            else if (["Senior Admin", "Admin", "Trial Admin"].includes(member.role)) category = "Admin";
+            else if (["Leader Developer", "Senior Developer", "Junior Developer"].includes(member.role)) category = "Developer";
+            else category = "Allowtester";
+
+            const card = document.createElement('a');
+            card.href = `discord://-/users/${member.discordId}`; // Proklik do Discordu
+            card.className = 'member-card';
+            card.innerHTML = `
+                <img src="${member.avatar}" class="avatar" alt="${member.nick}">
+                <div class="role-tag">${member.role}</div>
+                <div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${member.nick}</div>
+                <div class="discord-link">@${member.nick.toLowerCase().replace(" ", "")}</div>
+            `;
+            
+            const grid = document.getElementById(`grid-${category}`);
+            if(grid) grid.appendChild(card);
+        });
+    }
+
+    // Spustit při načtení
+    fetchDiscordTeam();
+</script>
+
+</body>
+</html>
