@@ -22,6 +22,27 @@
             color: var(--text-white);
             margin: 0;
             overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Logo v pozadí */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background-image: url('https://i.imgur.com/your-logo-url.png'); /* ZDE VLOŽ ODKAZ NA LOGO */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.05;
+            z-index: -1;
+            pointer-events: none;
         }
 
         /* Navigace */
@@ -69,10 +90,11 @@
             box-shadow: 0 0 15px var(--primary-green);
         }
 
-        .btn-logout {
-            background: linear-gradient(45deg, #444, #111);
-            color: white;
-            border: 1px solid var(--danger);
+        /* Styl pro odhlášení v navbaru */
+        .btn-logout-nav {
+            background: linear-gradient(45deg, #b30000, var(--danger)) !important;
+            color: white !important;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
         }
 
         /* Sekce */
@@ -80,6 +102,7 @@
             display: none;
             padding: 50px 10%;
             animation: fadeIn 0.5s ease;
+            flex: 1;
         }
 
         .page.active { display: block; }
@@ -185,10 +208,6 @@
             padding: 20px;
             border-radius: 10px;
         }
-        .rules-section h2 {
-            margin-top: 0;
-            font-size: 1.5rem;
-        }
         .rules-list {
             list-style: none;
             padding: 0;
@@ -235,8 +254,6 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-box h3 { margin-top: 0; color: var(--primary-green); }
-
         input, select {
             width: 100%;
             padding: 12px;
@@ -249,24 +266,29 @@
             border-radius: 10px;
         }
 
-        input:focus { border-color: var(--primary-green); }
-
-        /* Admin Status Bar */
-        #admin-status {
-            display: none;
-            background: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--primary-green);
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.5s ease;
+        /* Footer Copyright */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            font-size: 0.8rem;
+            border-top: 1px solid #111;
+            margin-top: auto;
         }
 
-        #add-member-trigger, #add-photo-trigger {
+        #add-member-trigger, #add-photo-trigger, #admin-banner {
             display: none;
             margin-bottom: 20px;
+        }
+
+        #admin-banner {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid var(--dark-green);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-green);
         }
 
     </style>
@@ -279,7 +301,7 @@
     <button onclick="showPage('galerie')">GALERIE</button>
     <button onclick="showPage('pravidla')">PRAVIDLA</button>
     <button onclick="window.open('https://odkaz-na-zakonik.cz', '_blank')">ZÁKONÍK</button>
-    <button id="auth-btn" class="btn-green" onclick="openLogin()">ADMIN DUTY</button>
+    <button id="auth-btn" class="btn-green" onclick="handleAuthClick()">ADMIN DUTY</button>
 </nav>
 
 <div id="o-nas" class="page active">
@@ -288,11 +310,7 @@
 </div>
 
 <div id="tym" class="page">
-    <div id="admin-status">
-        <span style="font-weight: bold; color: var(--primary-green);">● Admin Duty Active</span>
-        <button class="btn-small btn-delete" onclick="logoutAdmin()" style="padding: 8px 15px;">ODHLÁSIT SE</button>
-    </div>
-
+    <div id="admin-banner">● PRÁVĚ JSI V ADMIN DUTY</div>
     <h1>Náš Tým</h1>
 
     <div id="add-member-trigger">
@@ -328,8 +346,7 @@
         <button class="btn-green" onclick="openPhotoModal()">+ PŘIDAT FOTKU</button>
     </div>
 
-    <div class="gallery-grid" id="gallery-grid">
-        </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
 </div>
 
 <div id="pravidla" class="page">
@@ -340,66 +357,70 @@
             <h2>I. Obecná pravidla a pilíře interakce</h2>
             <ul class="rules-list">
                 <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu (např. ze streamu, Discordu nebo OOC chatu). Postava smí vědět pouze to, co se dozví přímo IC cestou.</li>
-                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně bez možnosti obrany. Patří sem i nadměrné využívání mechanik (např. mluvení v bezvědomí, řízení se čtyřmi prostřelenými pneumatikami).</li>
-                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa. Přenášení reálných sporů do hry, mluvení o herních mechanikách (lagy, FPS, pluginy) přímo do voice chatu.</li>
-                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach. Postava si musí vážit svého života. Pokud je v nevýhodě (přesila, mířící zbraň), musí spolupracovat a neriskovat život zbytečným hrdinstvím.</li>
-                <li><b>Value of Life (VOL)</b> Nadřazené pravidlo k FearRP. Postava se musí chovat tak, aby primárním cílem bylo přežití. To platí i pro situace, kdy na postavu nemíří zbraň přímo, ale situace je vysoce riziková (přestřelka v okolí, hořící budova).</li>
-                <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce (honička, zatýkání, ošetřování, únos).</li>
-                <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu a příběhového podkladu.</li>
-                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně k narážení do jiných vozidel nebo přejíždění osob bez adekvátního důvodu.</li>
-                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK). Hráč si nepamatuje okolnosti své smrti a po určitou dobu se nesmí vrátit na místo, kde k úmrtí došlo.</li>
-                <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých předmětů nebo dlouhých zbraní (pušky, brokovnice) bez odpovídajícího RP popisu (např. vytažení z kufru, batohu přes /me).</li>
-                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva (NPC). Město není prázdné; na veřejných místech jsou kamery, svědci a hlídky.</li>
-                <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy a ztráta majetku. Lze udělit pouze se souhlasem hráče nebo za specifických podmínek (např. poprava v rámci frakce).</li>
-                <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci. Postava zapomíná na události vedoucí k tomuto stavu.</li>
+                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně bez možnosti obrany. Patří sem i nadměrné využívání mechanik.</li>
+                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa. Přenášení reálných sporů do hry.</li>
+                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach. Postava si musí vážit svého života.</li>
+                <li><b>Value of Life (VOL)</b> Postava se musí chovat tak, aby primárním cílem bylo přežití.</li>
+                <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce.</li>
+                <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu.</li>
+                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně k narážení do osob.</li>
+                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK). Hráč si nepamatuje okolnosti své smrti.</li>
+                <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých zbraní bez odpovídajícího RP popisu.</li>
+                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva (NPC).</li>
+                <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy.</li>
+                <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci.</li>
             </ul>
         </div>
 
         <div class="rules-section">
             <h2>II. Komunikační příkazy a Imersivita</h2>
             <ul class="rules-list">
-                <li><b>/me (Action Description)</b> Slouží k popisu činností, které postava vykonává a které hra graficky neumožňuje (např. /me prohledává muže v oblasti pasu).</li>
-                <li><b>/do (State Description)</b> Slouží k popisu stavu věci, prostředí nebo k dotazování na stav jiné postavy (např. /do Jsou na zemi vidět stopy krve?). V /do je zakázáno lhát.</li>
-                <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce (např. /try vypáčit zámek).</li>
-                <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany (často policie) k interakci, pro kterou postava nemá reálný IC důvod, pouze chce "akci".</li>
-                <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP. Pokud vidíš animaci, nesmíš na ni reagovat, pokud tvoje postava nemá vizuální nebo sluchový vjem dané věci.</li>
+                <li><b>/me (Action Description)</b> Slouží k popisu činností, které postava vykonává.</li>
+                <li><b>/do (State Description)</b> Slouží k popisu stavu věci nebo prostředí. V /do je zakázáno lhát.</li>
+                <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce.</li>
+                <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany k interakci.</li>
+                <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP.</li>
             </ul>
         </div>
 
         <div class="rules-section">
             <h2>III. Nelegální frakce a Engagement (Honičky/Střelba)</h2>
             <ul class="rules-list">
-                <li><b>Engagement Timer (10-80 Restrictions)</b> V rámci interakce se státními složkami (LEO) je zakázáno zahájit střelbu dříve než po 10 minutách od začátku aktivního pronásledování (kódu 10-80). Cílem je dát prostor pro kvalitní honičku.</li>
-                <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu (např. odjezd od vykradeného obchodu/banky). Situace musí gradovat přirozeně a střelba je až krajní řešení.</li>
-                <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu (hory, louky, lesy, prudké svahy) je povolen nejdříve po 15 minutách od zahájení pronásledování nebo odjezdu od místa činu (banka/obchod). Toto pravidlo platí i pro majitele terénních vozidel (SUV, Offroad) a cross motocyklů. Před uplynutím tohoto limitu se musí pronásledovaný držet na zpevněných nebo polních cestách.</li>
-                <li><b>Fear of High Command</b> Povinný respekt k hierarchii. Nižší členové musí mít respekt z vedení své organizace. Neuposlechnutí může vést k internímu trestu či CK.</li>
-                <li><b>Gross Roleplay (Gross RP)</b> RP zahrnující extrémní násilí či mučení. Vyžaduje se předchozí OOC souhlas všech zúčastněných stran.</li>
-                <li><b>Turf Rule (Territory War)</b> Právo bránit své území. Agrese na vlastním území musí mít jasnou gradaci (výzva -> varování -> akce).</li>
-                <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly". Okrádání musí mít příběhový smysl.</li>
+                <li><b>Engagement Timer (10-80 Restrictions)</b> Zakázáno zahájit střelbu dříve než po 10 minutách honičky.</li>
+                <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu.</li>
+                <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu je povolen nejdříve po 15 minutách honičky.</li>
+                <li><b>Fear of High Command</b> Povinný respekt k hierarchii v organizaci.</li>
+                <li><b>Gross Roleplay (Gross RP)</b> RP zahrnující extrémní násilí. Vyžaduje se předchozí OOC souhlas.</li>
+                <li><b>Turf Rule (Territory War)</b> Právo bránit své území s jasnou gradací.</li>
+                <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly".</li>
             </ul>
         </div>
 
         <div class="rules-section">
             <h2>IV. Státní složky a K-9 (LSPD, BCSO, EMS)</h2>
             <ul class="rules-list">
-                <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu podezřelého (slovní výzva -> taser -> palná zbraň).</li>
-                <li><b>Corruption Policy</b> Jakákoliv forma korupce u státních složek musí být schválena vedením a musí mít hluboký příběhový základ.</li>
-                <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě. Pes je trénovaná zbraň bez strachu; útok na něj bez adekvátního projevu strachu je porušením FearRP.</li>
-                <li><b>K-9 Deployment Limits</b> Psovod zodpovídá za psa. Nasazení K-9 musí být podložené (např. pachová stopa, útěk nebezpečné osoby, aktivní odpor).</li>
-                <li><b>K-9 Injuries</b> Při zranění psa se psovod prioritně věnuje jeho záchraně a ošetření.</li>
+                <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu.</li>
+                <li><b>Corruption Policy</b> Korupce musí být schválena vedením.</li>
+                <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě.</li>
+                <li><b>K-9 Deployment Limits</b> Nasazení K-9 musí být podložené (pachová stopa atd.).</li>
+                <li><b>K-9 Injuries</b> Při zranění psa se psovod prioritně věnuje jeho záchraně.</li>
             </ul>
         </div>
 
         <div class="rules-section">
             <h2>V. Dopravní pravidla a nehody</h2>
             <ul class="rules-list">
-                <li><b>Non-RP Driving</b> Povinnost řídit realisticky. Sportovní a civilní vozy nesmí zdolávat hory nebo skákat z mostů.</li>
-                <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen adekvátně odehrát zranění odpovídající nárazu. Okamžitý útěk nebo střelba po těžké ráně je zakázána.</li>
-                <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu (low flying) a nesmí být používány jako zbraň k narážení.</li>
+                <li><b>Non-RP Driving</b> Povinnost řídit realisticky. Sportovní vozy nesmí zdolávat hory.</li>
+                <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen odehrát zranění.</li>
+                <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu.</li>
             </ul>
         </div>
     </div>
 </div>
+
+<footer>
+    &copy; 2026 SprunkWay RP | Všechna práva vyhrazena.
+</footer>
 
 <div id="login-overlay" class="overlay">
     <div class="modal-box">
@@ -448,9 +469,8 @@
 <div id="photo-overlay" class="overlay">
     <div class="modal-box">
         <h3>PŘIDAT FOTKU</h3>
-        <p style="color: #888; font-size: 0.8rem;">Vložte přímý odkaz na obrázek</p>
-        <input type="text" id="photo-url" placeholder="https://priklad.cz/obrazek.jpg">
-        <input type="text" id="photo-caption" placeholder="Jméno výherce / Popis">
+        <input type="text" id="photo-url" placeholder="URL obrázku">
+        <input type="text" id="photo-caption" placeholder="Popis / Výherce">
         <button class="btn-green" style="width: 100%;" onclick="savePhoto()">ULOŽIT FOTKU</button>
         <button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button>
     </div>
@@ -458,14 +478,13 @@
 
 <div id="notify-overlay" class="overlay">
     <div class="modal-box" style="width: 250px;">
-        <h3 id="notify-title" style="font-size: 1.1rem;">UPOZORNĚNÍ</h3>
-        <p id="notify-msg" style="font-size: 0.9rem; color: #bbb;"></p>
+        <h3 id="notify-title">UPOZORNĚNÍ</h3>
+        <p id="notify-msg"></p>
         <button class="btn-green" style="width: 100%;" onclick="closeOverlay('notify-overlay')">OK</button>
     </div>
 </div>
 
 <script>
-    // --- SUPABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://rruizvfftwmenfcliwvk.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydWl6dmZmdHdtZW5mY2xpd3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTM0NjIsImV4cCI6MjA5MDI4OTQ2Mn0.5X523zn0FrmF11jbYQTBD6Q90R3AKsqHhtIYe9KEgiQ';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -485,30 +504,33 @@
         fetchGallery();
     };
 
-    // --- FETCH DATA ---
     async function fetchTeam() {
-        const { data, error } = await _supabase.from('team_members').select('*');
-        if (!error) { teamData = data || []; renderTeam(); }
+        const { data } = await _supabase.from('team_members').select('*');
+        teamData = data || [];
+        renderTeam();
     }
 
     async function fetchGallery() {
-        const { data, error } = await _supabase.from('gallery').select('*').order('created_at', { ascending: false });
-        if (!error) { galleryData = data || []; renderGallery(); }
+        const { data } = await _supabase.from('gallery').select('*').order('created_at', { ascending: false });
+        galleryData = data || [];
+        renderGallery();
     }
 
-    // --- NAVIGATION ---
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        if (window.event) window.event.currentTarget.classList.add('active');
+        if (window.event && window.event.currentTarget.tagName === "BUTTON") window.event.currentTarget.classList.add('active');
     }
 
-    // --- ADMIN AUTH ---
-    function openLogin() {
-        if(isAdmin) { showPage('tym'); return; }
-        document.getElementById('login-overlay').style.display = 'flex';
-        document.getElementById('admin-pass').focus();
+    // --- OPRAVENÉ ODHLÁŠENÍ V NAVBARU ---
+    function handleAuthClick() {
+        if (isAdmin) {
+            logoutAdmin();
+        } else {
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('admin-pass').focus();
+        }
     }
 
     function checkAdmin() {
@@ -517,9 +539,9 @@
             isAdmin = true;
             closeOverlay('login-overlay');
             updateAdminUI();
-            customNotify("Úspěch", "Admin Duty byla aktivována.");
+            customNotify("Úspěch", "Admin Duty aktivní.");
         } else {
-            customNotify("Chyba", "Neplatný autorizační kód!");
+            customNotify("Chyba", "Špatný kód.");
         }
         document.getElementById('admin-pass').value = '';
     }
@@ -527,41 +549,36 @@
     function logoutAdmin() {
         isAdmin = false;
         updateAdminUI();
-        customNotify("Odhlášeno", "Admin Duty byla ukončena.");
+        customNotify("Odhlášeno", "Admin Duty ukončena.");
     }
 
     function updateAdminUI() {
-        const statusBar = document.getElementById('admin-status');
+        const authBtn = document.getElementById('auth-btn');
         const addBtnTeam = document.getElementById('add-member-trigger');
         const addBtnPhoto = document.getElementById('add-photo-trigger');
-        const authBtn = document.getElementById('auth-btn');
+        const banner = document.getElementById('admin-banner');
 
         if(isAdmin) {
-            statusBar.style.display = 'flex';
+            authBtn.innerText = "ODHLÁSIT (ADMIN)";
+            authBtn.classList.add('btn-logout-nav');
             addBtnTeam.style.display = 'block';
             addBtnPhoto.style.display = 'block';
-            authBtn.innerText = "ADMIN ACTIVE";
-            authBtn.style.boxShadow = "0 0 15px var(--primary-green)";
+            banner.style.display = 'block';
         } else {
-            statusBar.style.display = 'none';
+            authBtn.innerText = "ADMIN DUTY";
+            authBtn.classList.remove('btn-logout-nav');
             addBtnTeam.style.display = 'none';
             addBtnPhoto.style.display = 'none';
-            authBtn.innerText = "ADMIN DUTY";
-            authBtn.style.boxShadow = "none";
+            banner.style.display = 'none';
         }
         renderTeam();
         renderGallery();
     }
 
-    // --- UI HELPERS ---
     function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
-    function customNotify(title, msg) {
-        document.getElementById('notify-title').innerText = title;
-        document.getElementById('notify-msg').innerText = msg;
-        document.getElementById('notify-overlay').style.display = 'flex';
-    }
+    function customNotify(t, m) { document.getElementById('notify-title').innerText = t; document.getElementById('notify-msg').innerText = m; document.getElementById('notify-overlay').style.display = 'flex'; }
 
-    // --- MEMBER ACTIONS ---
+    // --- TEAM LOGIC ---
     function openAddModal() {
         document.getElementById('modal-title').innerText = "PŘIDAT ČLENA";
         document.getElementById('edit-id').value = "";
@@ -574,12 +591,8 @@
         const role = document.getElementById('member-role').value;
         const editId = document.getElementById('edit-id').value;
         if(!nick) return;
-
-        if(editId) {
-            await _supabase.from('team_members').update({ nickname: nick, role: role }).eq('id', editId);
-        } else {
-            await _supabase.from('team_members').insert([{ nickname: nick, role: role }]);
-        }
+        if(editId) await _supabase.from('team_members').update({ nickname: nick, role: role }).eq('id', editId);
+        else await _supabase.from('team_members').insert([{ nickname: nick, role: role }]);
         closeOverlay('member-overlay');
         fetchTeam();
     }
@@ -598,21 +611,16 @@
         fetchTeam();
     }
 
-    // --- PHOTO ACTIONS ---
+    // --- PHOTO LOGIC ---
     function openPhotoModal() { document.getElementById('photo-overlay').style.display = 'flex'; }
-
     async function savePhoto() {
         const url = document.getElementById('photo-url').value;
-        const caption = document.getElementById('photo-caption').value;
+        const cap = document.getElementById('photo-caption').value;
         if(!url) return;
-
-        await _supabase.from('gallery').insert([{ image_url: url, caption: caption }]);
-        document.getElementById('photo-url').value = '';
-        document.getElementById('photo-caption').value = '';
+        await _supabase.from('gallery').insert([{ image_url: url, caption: cap }]);
         closeOverlay('photo-overlay');
         fetchGallery();
     }
-
     async function deletePhoto(id) {
         await _supabase.from('gallery').delete().eq('id', id);
         fetchGallery();
@@ -620,51 +628,44 @@
 
     // --- RENDERING ---
     function renderTeam() {
-        document.getElementById('grid-Vedení').innerHTML = "";
-        document.getElementById('grid-Admin').innerHTML = "";
-        document.getElementById('grid-Developer').innerHTML = "";
-        document.getElementById('grid-Allowtester').innerHTML = "";
-
+        const sections = ['Vedení', 'Admin', 'Developer', 'Allowtester'];
+        sections.forEach(s => document.getElementById(`grid-${s}`).innerHTML = "");
         teamData.sort((a, b) => (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99));
-
-        teamData.forEach((member, index) => {
-            let category = "Allowtester";
-            if (["Founder", "Co-Founder", "Managment", "Community Managment", "Head of Staff"].includes(member.role)) category = "Vedení";
-            else if (["Senior Admin", "Admin", "Trial Admin"].includes(member.role)) category = "Admin";
-            else if (["Leader Developer", "Senior Developer", "Junior Developer"].includes(member.role)) category = "Developer";
-
+        teamData.forEach((m, i) => {
+            let cat = "Allowtester";
+            if (["Founder", "Co-Founder", "Managment", "Community Managment", "Head of Staff"].includes(m.role)) cat = "Vedení";
+            else if (["Senior Admin", "Admin", "Trial Admin"].includes(m.role)) cat = "Admin";
+            else if (["Leader Developer", "Senior Developer", "Junior Developer"].includes(m.role)) cat = "Developer";
             const card = document.createElement('div');
             card.className = 'member-card';
             card.innerHTML = `
-                <div class="role-tag">${member.role}</div>
-                <div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${member.nickname}</div>
-                <div class="admin-controls" id="controls-${member.id}">
-                    <button class="btn-small btn-edit" onclick="editMember(${index})">UPRAVIT</button>
-                    <button class="btn-small btn-delete" onclick="deleteMember(${member.id})">SMAZAT</button>
+                <div class="role-tag">${m.role}</div>
+                <div style="font-weight: bold;">${m.nickname}</div>
+                <div class="admin-controls" style="display:${isAdmin?'flex':'none'}">
+                    <button class="btn-small btn-edit" onclick="editMember(${i})">UPRAVIT</button>
+                    <button class="btn-small btn-delete" onclick="deleteMember(${m.id})">SMAZAT</button>
                 </div>
             `;
-            document.getElementById(`grid-${category}`).appendChild(card);
-            if(isAdmin) document.getElementById(`controls-${member.id}`).style.display = 'flex';
+            document.getElementById(`grid-${cat}`).appendChild(card);
         });
     }
 
     function renderGallery() {
         const grid = document.getElementById('gallery-grid');
         grid.innerHTML = "";
-        galleryData.forEach(photo => {
+        galleryData.forEach(p => {
             const card = document.createElement('div');
             card.className = 'photo-card';
             card.innerHTML = `
-                <img src="${photo.image_url}" alt="Soutěžní snímek">
+                <img src="${p.image_url}">
                 <div class="photo-info">
-                    <div style="color: var(--primary-green); font-weight: bold;">${photo.caption || 'Bez popisu'}</div>
-                    ${isAdmin ? `<button class="btn-small btn-delete" onclick="deletePhoto(${photo.id})" style="margin-top:10px;">SMAZAT</button>` : ''}
+                    <div style="color:var(--primary-green);font-weight:bold;">${p.caption || 'Bez popisu'}</div>
+                    ${isAdmin ? `<button class="btn-small btn-delete" onclick="deletePhoto(${p.id})" style="margin-top:10px;">SMAZAT</button>` : ''}
                 </div>
             `;
             grid.appendChild(card);
         });
     }
 </script>
-
 </body>
 </html>
