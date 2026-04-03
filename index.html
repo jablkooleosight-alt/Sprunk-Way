@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SprunkWay RP</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -137,6 +136,36 @@
 
         h2, h3 { color: var(--primary-green); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 30px;}
 
+        /* Pravidla styling */
+        .rules-content {
+            line-height: 1.6;
+            color: #ccc;
+        }
+        .rules-section {
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .rules-section h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+        .rules-list li {
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 2px solid var(--dark-green);
+        }
+        .rules-list b {
+            color: var(--primary-green);
+            display: block;
+            margin-bottom: 5px;
+        }
+
         /* Admin Overlay & Modals */
         .overlay {
             display: none;
@@ -214,13 +243,11 @@
     <button id="auth-btn" class="btn-green" onclick="openLogin()">ADMIN DUTY</button>
 </nav>
 
-<!-- STRÁNKA: O NÁS -->
 <div id="o-nas" class="page active">
     <h1>Vítejte v <span style="color: var(--primary-green);">SprunkWay</span></h1>
     <p>Projekt SprunkWay je unikátní RP zážitek postavený na komunitě a kvalitním roleplayi. Naším cílem je vytvořit prostředí, kde se každý hráč cítí součástí příběhu.</p>
 </div>
 
-<!-- STRÁNKA: NÁŠ TÝM -->
 <div id="tym" class="page">
     <div id="admin-status">
         <span style="font-weight: bold; color: var(--primary-green);">● Admin Duty Active</span>
@@ -254,13 +281,75 @@
     </div>
 </div>
 
-<!-- STRÁNKA: PRAVIDLA -->
 <div id="pravidla" class="page">
     <h1>Pravidla Serveru</h1>
-    <p>Zde budou vypsána pravidla vašeho projektu...</p>
+    
+    <div class="rules-content">
+        <div class="rules-section">
+            <h2>I. Obecná pravidla a pilíře interakce</h2>
+            <ul class="rules-list">
+                <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu (např. ze streamu, Discordu nebo OOC chatu). Postava smí vědět pouze to, co se dozví přímo IC cestou.</li>
+                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně bez možnosti obrany. Patří sem i nadměrné využívání mechanik (např. mluvení v bezvědomí, řízení se čtyřmi prostřelenými pneumatikami).</li>
+                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa. Přenášení reálných sporů do hry, mluvení o herních mechanikách (lagy, FPS, pluginy) přímo do voice chatu.</li>
+                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach. Postava si musí vážit svého života. Pokud je v nevýhodě (přesila, mířící zbraň), musí spolupracovat a neriskovat život zbytečným hrdinstvím.</li>
+                <li><b>Value of Life (VOL)</b> Nadřazené pravidlo k FearRP. Postava se musí chovat tak, aby primárním cílem bylo přežití. To platí i pro situace, kdy na postavu nemíří zbraň přímo, ale situace je vysoce riziková (přestřelka v okolí, hořící budova).</li>
+                <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce (honička, zatýkání, ošetřování, únos).</li>
+                <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu a příběhového podkladu.</li>
+                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně k narážení do jiných vozidel nebo přejíždění osob bez adekvátního důvodu.</li>
+                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK). Hráč si nepamatuje okolnosti své smrti a po určitou dobu se nesmí vrátit na místo, kde k úmrtí došlo.</li>
+                <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých předmětů nebo dlouhých zbraní (pušky, brokovnice) bez odpovídajícího RP popisu (např. vytažení z kufru, batohu přes /me).</li>
+                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva (NPC). Město není prázdné; na veřejných místech jsou kamery, svědci a hlídky.</li>
+                <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy a ztráta majetku. Lze udělit pouze se souhlasem hráče nebo za specifických podmínek (např. poprava v rámci frakce).</li>
+                <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci. Postava zapomíná na události vedoucí k tomuto stavu.</li>
+            </ul>
+        </div>
+
+        <div class="rules-section">
+            <h2>II. Komunikační příkazy a Imersivita</h2>
+            <ul class="rules-list">
+                <li><b>/me (Action Description)</b> Slouží k popisu činností, které postava vykonává a které hra graficky neumožňuje (např. /me prohledává muže v oblasti pasu).</li>
+                <li><b>/do (State Description)</b> Slouží k popisu stavu věci, prostředí nebo k dotazování na stav jiné postavy (např. /do Jsou na zemi vidět stopy krve?). V /do je zakázáno lhát.</li>
+                <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce (např. /try vypáčit zámek).</li>
+                <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany (často policie) k interakci, pro kterou postava nemá reálný IC důvod, pouze chce "akci".</li>
+                <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP. Pokud vidíš animaci, nesmíš na ni reagovat, pokud tvoje postava nemá vizuální nebo sluchový vjem dané věci.</li>
+            </ul>
+        </div>
+
+        <div class="rules-section">
+            <h2>III. Nelegální frakce a Engagement (Honičky/Střelba)</h2>
+            <ul class="rules-list">
+                <li><b>Engagement Timer (10-80 Restrictions)</b> V rámci interakce se státními složkami (LEO) je zakázáno zahájit střelbu dříve než po 10 minutách od začátku aktivního pronásledování (kódu 10-80). Cílem je dát prostor pro kvalitní honičku.</li>
+                <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu (např. odjezd od vykradeného obchodu/banky). Situace musí gradovat přirozeně a střelba je až krajní řešení.</li>
+                <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu (hory, louky, lesy, prudké svahy) je povolen nejdříve po 15 minutách od zahájení pronásledování nebo odjezdu od místa činu (banka/obchod). Toto pravidlo platí i pro majitele terénních vozidel (SUV, Offroad) a cross motocyklů. Před uplynutím tohoto limitu se musí pronásledovaný držet na zpevněných nebo polních cestách.</li>
+                <li><b>Fear of High Command</b> Povinný respekt k hierarchii. Nižší členové musí mít respekt z vedení své organizace. Neuposlechnutí může vést k internímu trestu či CK.</li>
+                <li><b>Gross Roleplay (Gross RP)</b> RP zahrnující extrémní násilí či mučení. Vyžaduje se předchozí OOC souhlas všech zúčastněných stran.</li>
+                <li><b>Turf Rule (Territory War)</b> Právo bránit své území. Agrese na vlastním území musí mít jasnou gradaci (výzva -> varování -> akce).</li>
+                <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly". Okrádání musí mít příběhový smysl.</li>
+            </ul>
+        </div>
+
+        <div class="rules-section">
+            <h2>IV. Státní složky a K-9 (LSPD, BCSO, EMS)</h2>
+            <ul class="rules-list">
+                <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu podezřelého (slovní výzva -> taser -> palná zbraň).</li>
+                <li><b>Corruption Policy</b> Jakákoliv forma korupce u státních složek musí být schválena vedením a musí mít hluboký příběhový základ.</li>
+                <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě. Pes je trénovaná zbraň bez strachu; útok na něj bez adekvátního projevu strachu je porušením FearRP.</li>
+                <li><b>K-9 Deployment Limits</b> Psovod zodpovídá za psa. Nasazení K-9 musí být podložené (např. pachová stopa, útěk nebezpečné osoby, aktivní odpor).</li>
+                <li><b>K-9 Injuries</b> Při zranění psa se psovod prioritně věnuje jeho záchraně a ošetření.</li>
+            </ul>
+        </div>
+
+        <div class="rules-section">
+            <h2>V. Dopravní pravidla a nehody</h2>
+            <ul class="rules-list">
+                <li><b>Non-RP Driving</b> Povinnost řídit realisticky. Sportovní a civilní vozy nesmí zdolávat hory nebo skákat z mostů.</li>
+                <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen adekvátně odehrát zranění odpovídající nárazu. Okamžitý útěk nebo střelba po těžké ráně je zakázána.</li>
+                <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu (low flying) a nesmí být používány jako zbraň k narážení.</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
-<!-- OVERLAY: LOGIN -->
 <div id="login-overlay" class="overlay">
     <div class="modal-box">
         <h3>ADMIN DUTY</h3>
@@ -271,7 +360,6 @@
     </div>
 </div>
 
-<!-- OVERLAY: ADD/EDIT MEMBER -->
 <div id="member-overlay" class="overlay">
     <div class="modal-box">
         <h3 id="modal-title">PŘIDAT ČLENA</h3>
@@ -306,7 +394,6 @@
     </div>
 </div>
 
-<!-- OVERLAY: NOTIFICATION -->
 <div id="notify-overlay" class="overlay">
     <div class="modal-box" style="width: 250px;">
         <h3 id="notify-title" style="font-size: 1.1rem;">UPOZORNĚNÍ</h3>
