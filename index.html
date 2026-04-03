@@ -136,6 +136,44 @@
 
         h2, h3 { color: var(--primary-green); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 30px;}
 
+        /* Galerie Styling */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .photo-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: 0.3s;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .photo-card:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            border-bottom: 1px solid #222;
+        }
+
+        .photo-info {
+            padding: 15px;
+            text-align: center;
+            background: #1a1a1a;
+        }
+
         /* Pravidla styling */
         .rules-content {
             line-height: 1.6;
@@ -187,7 +225,7 @@
             border-radius: 20px;
             border: 1px solid var(--dark-green);
             text-align: center;
-            width: 320px;
+            width: 350px;
             box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
             animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -226,7 +264,7 @@
             animation: fadeIn 0.5s ease;
         }
 
-        #add-member-trigger {
+        #add-member-trigger, #add-photo-trigger {
             display: none;
             margin-bottom: 20px;
         }
@@ -238,6 +276,7 @@
 <nav>
     <button onclick="showPage('o-nas')" id="btn-o-nas" class="active">O NÁS</button>
     <button onclick="showPage('tym')">NÁŠ TÝM</button>
+    <button onclick="showPage('galerie')">GALERIE</button>
     <button onclick="showPage('pravidla')">PRAVIDLA</button>
     <button onclick="window.open('https://odkaz-na-zakonik.cz', '_blank')">ZÁKONÍK</button>
     <button id="auth-btn" class="btn-green" onclick="openLogin()">ADMIN DUTY</button>
@@ -279,6 +318,18 @@
         <h3>Allowtesters</h3>
         <div class="team-grid" id="grid-Allowtester"></div>
     </div>
+</div>
+
+<div id="galerie" class="page">
+    <h1>Vítězné Fotografie</h1>
+    <p>Zde najdete nejlepší snímky z našich pravidelných foto-soutěží.</p>
+    
+    <div id="add-photo-trigger">
+        <button class="btn-green" onclick="openPhotoModal()">+ PŘIDAT FOTKU</button>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+        </div>
 </div>
 
 <div id="pravidla" class="page">
@@ -394,6 +445,17 @@
     </div>
 </div>
 
+<div id="photo-overlay" class="overlay">
+    <div class="modal-box">
+        <h3>PŘIDAT FOTKU</h3>
+        <p style="color: #888; font-size: 0.8rem;">Vložte přímý odkaz na obrázek</p>
+        <input type="text" id="photo-url" placeholder="https://priklad.cz/obrazek.jpg">
+        <input type="text" id="photo-caption" placeholder="Jméno výherce / Popis">
+        <button class="btn-green" style="width: 100%;" onclick="savePhoto()">ULOŽIT FOTKU</button>
+        <button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button>
+    </div>
+</div>
+
 <div id="notify-overlay" class="overlay">
     <div class="modal-box" style="width: 250px;">
         <h3 id="notify-title" style="font-size: 1.1rem;">UPOZORNĚNÍ</h3>
@@ -404,46 +466,37 @@
 
 <script>
     // --- SUPABASE CONFIGURATION ---
-    const SUPABASE_URL = 'https://rruizvfftwmenfcliwvk.supabase.co'; // Vlož URL ze Supabase
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydWl6dmZmdHdtZW5mY2xpd3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTM0NjIsImV4cCI6MjA5MDI4OTQ2Mn0.5X523zn0FrmF11jbYQTBD6Q90R3AKsqHhtIYe9KEgiQ';    // Vlož ANON_KEY ze Supabase
+    const SUPABASE_URL = 'https://rruizvfftwmenfcliwvk.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydWl6dmZmdHdtZW5mY2xpd3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTM0NjIsImV4cCI6MjA5MDI4OTQ2Mn0.5X523zn0FrmF11jbYQTBD6Q90R3AKsqHhtIYe9KEgiQ';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let teamData = [];
+    let galleryData = [];
     let isAdmin = false;
 
     const rolePriority = {
-        "Founder": 1,
-        "Co-Founder": 2,
-        "Managment": 3,
-        "Community Managment": 4,
-        "Head of Staff": 5,
-        "Senior Admin": 6,
-        "Admin": 7,
-        "Trial Admin": 8,
-        "Leader Developer": 9,
-        "Senior Developer": 10,
-        "Junior Developer": 11,
-        "Head of AL tester": 12,
-        "Senior AL tester": 13,
-        "Trial AL tester": 14
+        "Founder": 1, "Co-Founder": 2, "Managment": 3, "Community Managment": 4, "Head of Staff": 5,
+        "Senior Admin": 6, "Admin": 7, "Trial Admin": 8, "Leader Developer": 9, "Senior Developer": 10,
+        "Junior Developer": 11, "Head of AL tester": 12, "Senior AL tester": 13, "Trial AL tester": 14
     };
 
-    // Načtení dat při startu
     window.onload = () => {
         fetchTeam();
+        fetchGallery();
     };
 
+    // --- FETCH DATA ---
     async function fetchTeam() {
-        const { data, error } = await _supabase
-            .from('team_members')
-            .select('*');
-        
-        if (!error) {
-            teamData = data || [];
-            renderTeam();
-        }
+        const { data, error } = await _supabase.from('team_members').select('*');
+        if (!error) { teamData = data || []; renderTeam(); }
     }
 
+    async function fetchGallery() {
+        const { data, error } = await _supabase.from('gallery').select('*').order('created_at', { ascending: false });
+        if (!error) { galleryData = data || []; renderGallery(); }
+    }
+
+    // --- NAVIGATION ---
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -451,12 +504,9 @@
         if (window.event) window.event.currentTarget.classList.add('active');
     }
 
-    /* AUTH LOGIC */
+    // --- ADMIN AUTH ---
     function openLogin() {
-        if(isAdmin) {
-            showPage('tym');
-            return;
-        }
+        if(isAdmin) { showPage('tym'); return; }
         document.getElementById('login-overlay').style.display = 'flex';
         document.getElementById('admin-pass').focus();
     }
@@ -482,28 +532,36 @@
 
     function updateAdminUI() {
         const statusBar = document.getElementById('admin-status');
-        const addBtn = document.getElementById('add-member-trigger');
+        const addBtnTeam = document.getElementById('add-member-trigger');
+        const addBtnPhoto = document.getElementById('add-photo-trigger');
         const authBtn = document.getElementById('auth-btn');
 
         if(isAdmin) {
             statusBar.style.display = 'flex';
-            addBtn.style.display = 'block';
+            addBtnTeam.style.display = 'block';
+            addBtnPhoto.style.display = 'block';
             authBtn.innerText = "ADMIN ACTIVE";
             authBtn.style.boxShadow = "0 0 15px var(--primary-green)";
         } else {
             statusBar.style.display = 'none';
-            addBtn.style.display = 'none';
+            addBtnTeam.style.display = 'none';
+            addBtnPhoto.style.display = 'none';
             authBtn.innerText = "ADMIN DUTY";
             authBtn.style.boxShadow = "none";
         }
         renderTeam();
+        renderGallery();
     }
 
-    /* MODAL LOGIC */
-    function closeOverlay(id) {
-        document.getElementById(id).style.display = 'none';
+    // --- UI HELPERS ---
+    function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
+    function customNotify(title, msg) {
+        document.getElementById('notify-title').innerText = title;
+        document.getElementById('notify-msg').innerText = msg;
+        document.getElementById('notify-overlay').style.display = 'flex';
     }
 
+    // --- MEMBER ACTIONS ---
     function openAddModal() {
         document.getElementById('modal-title').innerText = "PŘIDAT ČLENA";
         document.getElementById('edit-id').value = "";
@@ -511,33 +569,19 @@
         document.getElementById('member-overlay').style.display = 'flex';
     }
 
-    function customNotify(title, msg) {
-        document.getElementById('notify-title').innerText = title;
-        document.getElementById('notify-msg').innerText = msg;
-        document.getElementById('notify-overlay').style.display = 'flex';
-    }
-
-    /* TEAM LOGIC - SUPABASE CONNECTED */
     async function saveMember() {
         const nick = document.getElementById('member-nick').value;
         const role = document.getElementById('member-role').value;
         const editId = document.getElementById('edit-id').value;
-
-        if(!nick) {
-            customNotify("Chyba", "Musíš zadat nickname!");
-            return;
-        }
+        if(!nick) return;
 
         if(editId) {
-            // Update existujícího
             await _supabase.from('team_members').update({ nickname: nick, role: role }).eq('id', editId);
         } else {
-            // Přidání nového
             await _supabase.from('team_members').insert([{ nickname: nick, role: role }]);
         }
-
         closeOverlay('member-overlay');
-        fetchTeam(); // Znovu načte data z DB a vyrenderuje
+        fetchTeam();
     }
 
     function editMember(index) {
@@ -554,22 +598,40 @@
         fetchTeam();
     }
 
+    // --- PHOTO ACTIONS ---
+    function openPhotoModal() { document.getElementById('photo-overlay').style.display = 'flex'; }
+
+    async function savePhoto() {
+        const url = document.getElementById('photo-url').value;
+        const caption = document.getElementById('photo-caption').value;
+        if(!url) return;
+
+        await _supabase.from('gallery').insert([{ image_url: url, caption: caption }]);
+        document.getElementById('photo-url').value = '';
+        document.getElementById('photo-caption').value = '';
+        closeOverlay('photo-overlay');
+        fetchGallery();
+    }
+
+    async function deletePhoto(id) {
+        await _supabase.from('gallery').delete().eq('id', id);
+        fetchGallery();
+    }
+
+    // --- RENDERING ---
     function renderTeam() {
         document.getElementById('grid-Vedení').innerHTML = "";
         document.getElementById('grid-Admin').innerHTML = "";
         document.getElementById('grid-Developer').innerHTML = "";
         document.getElementById('grid-Allowtester').innerHTML = "";
 
-        teamData.sort((a, b) => {
-            return (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99);
-        });
+        teamData.sort((a, b) => (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99));
 
         teamData.forEach((member, index) => {
-            let category = "";
+            let category = "Allowtester";
             if (["Founder", "Co-Founder", "Managment", "Community Managment", "Head of Staff"].includes(member.role)) category = "Vedení";
             else if (["Senior Admin", "Admin", "Trial Admin"].includes(member.role)) category = "Admin";
             else if (["Leader Developer", "Senior Developer", "Junior Developer"].includes(member.role)) category = "Developer";
-            else category = "Allowtester";
 
             const card = document.createElement('div');
             card.className = 'member-card';
@@ -581,14 +643,25 @@
                     <button class="btn-small btn-delete" onclick="deleteMember(${member.id})">SMAZAT</button>
                 </div>
             `;
-            
-            const targetGrid = document.getElementById(`grid-${category}`);
-            if(targetGrid) targetGrid.appendChild(card);
-            
-            if(isAdmin) {
-                const controls = document.getElementById(`controls-${member.id}`);
-                if(controls) controls.style.display = 'flex';
-            }
+            document.getElementById(`grid-${category}`).appendChild(card);
+            if(isAdmin) document.getElementById(`controls-${member.id}`).style.display = 'flex';
+        });
+    }
+
+    function renderGallery() {
+        const grid = document.getElementById('gallery-grid');
+        grid.innerHTML = "";
+        galleryData.forEach(photo => {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.innerHTML = `
+                <img src="${photo.image_url}" alt="Soutěžní snímek">
+                <div class="photo-info">
+                    <div style="color: var(--primary-green); font-weight: bold;">${photo.caption || 'Bez popisu'}</div>
+                    ${isAdmin ? `<button class="btn-small btn-delete" onclick="deletePhoto(${photo.id})" style="margin-top:10px;">SMAZAT</button>` : ''}
+                </div>
+            `;
+            grid.appendChild(card);
         });
     }
 </script>
