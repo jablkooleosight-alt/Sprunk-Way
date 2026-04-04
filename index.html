@@ -432,8 +432,8 @@
 <div id="login-overlay" class="overlay"><div class="modal-box"><h3>ADMIN DUTY</h3><input type="password" id="admin-pass" placeholder="••••••••"><button class="btn-green" style="width: 100%;" onclick="checkAdmin()">POTVRDIT</button><button onclick="closeOverlay('login-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZRUŠIT</button></div></div>
 
 <div id="member-overlay" class="overlay"><div class="modal-box"><h3 id="modal-title">PŘIDAT ČLENA</h3><input type="hidden" id="edit-id"><input type="text" id="member-nick" placeholder="Nickname">
-<input type="text" id="member-discord" placeholder="Discord URL (např. discord.gg/...)">
-<input type="text" id="member-tiktok" placeholder="TikTok URL">
+<input type="text" id="member-discord" placeholder="Discord URL (https://...)">
+<input type="text" id="member-tiktok" placeholder="TikTok URL (https://...)">
 <select id="member-role"><optgroup label="Vedení"><option value="Founder">Founder</option><option value="Co-Founder">Co-Founder</option><option value="Managment">Managment</option><option value="Community Managment">Community Managment</option><option value="Head of Staff">Head of Staff</option></optgroup><optgroup label="Admin Team"><option value="Senior Admin">Senior Admin</option><option value="Admin">Admin</option><option value="Trial Admin">Trial Admin</option></optgroup><optgroup label="Developer Team"><option value="Leader Developer">Leader Developer</option><option value="Senior Developer">Senior Developer</option><option value="Junior Developer">Junior Developer</option></optgroup><optgroup label="Allowtester Team"><option value="Head of AL tester">Head of AL tester</option><option value="Senior AL tester">Senior AL tester</option><option value="Trial AL tester">Trial AL tester</option></optgroup></select><button class="btn-green" style="width:100%" onclick="saveMember()">ULOŽIT ČLENA</button><button onclick="closeOverlay('member-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
 
 <div id="photo-overlay" class="overlay"><div class="modal-box"><h3>PŘIDAT FOTKU</h3><input type="text" id="photo-url" placeholder="URL obrázku (Imgur atd.)"><input type="text" id="photo-caption" placeholder="Popis / Výherce"><button class="btn-green" style="width:100%" onclick="savePhoto()">ULOŽIT FOTKU</button><button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
@@ -511,10 +511,9 @@
     function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
     function customNotify(t, m) { document.getElementById('notify-title').innerText = t; document.getElementById('notify-msg').innerText = m; document.getElementById('notify-overlay').style.display = 'flex'; }
 
-    // --- FUNKCE PRO OTEVŘENÍ MODALŮ (OPRAVA) ---
     function openAddModal() {
         document.getElementById('modal-title').innerText = "PŘIDAT ČLENA";
-        document.getElementById('edit-id').value = ""; // Důležité: vyčistit ID, aby neprobíhala editace
+        document.getElementById('edit-id').value = "";
         document.getElementById('member-nick').value = "";
         document.getElementById('member-discord').value = "";
         document.getElementById('member-tiktok').value = "";
@@ -535,11 +534,14 @@
         const editId = document.getElementById('edit-id').value;
         if(!nick) return;
         
-        const memberObj = { nickname: nick, role: role, discord_url: disc, tiktok_url: tt };
-        
-        if(editId) await _supabase.from('team_members').update(memberObj).eq('id', editId);
-        else await _supabase.from('team_members').insert([memberObj]);
-        
+        // DŮLEŽITÉ: Názvy polí musí odpovídat sloupcům v Supabase
+        const memberData = { nickname: nick, role: role, discord_url: disc, tiktok_url: tt };
+
+        if(editId) {
+            await _supabase.from('team_members').update(memberData).eq('id', editId);
+        } else {
+            await _supabase.from('team_members').insert([memberData]);
+        }
         closeOverlay('member-overlay'); fetchTeam();
     }
 
@@ -577,18 +579,21 @@
             else if (["Senior Admin", "Admin", "Trial Admin"].includes(m.role)) cat = "Admin";
             else if (["Leader Developer", "Senior Developer", "Junior Developer"].includes(m.role)) cat = "Developer";
             
-            // Sestavení social linků
-            let socialHTML = `<div class="social-links">`;
-            if(m.discord_url) socialHTML += `<img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" class="social-icon" onclick="window.open('${m.discord_url}','_blank')" title="Discord">`;
-            if(m.tiktok_url) socialHTML += `<img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon" onclick="window.open('${m.tiktok_url}','_blank')" title="TikTok">`;
-            socialHTML += `</div>`;
+            // Generování sociálních ikon
+            let socialsHTML = '';
+            if (m.discord_url || m.tiktok_url) {
+                socialsHTML = '<div class="social-links">';
+                if (m.discord_url) socialsHTML += `<img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" class="social-icon" onclick="window.open('${m.discord_url}', '_blank')">`;
+                if (m.tiktok_url) socialsHTML += `<img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon" onclick="window.open('${m.tiktok_url}', '_blank')">`;
+                socialsHTML += '</div>';
+            }
 
             const card = document.createElement('div');
             card.className = 'member-card';
             card.innerHTML = `
                 <div class="role-tag">${m.role}</div>
                 <div style="font-weight: bold;">${m.nickname}</div>
-                ${socialHTML}
+                ${socialsHTML}
                 <div class="admin-controls" style="display:${isAdmin?'flex':'none'}">
                     <button class="btn-small btn-edit" onclick="editMember(${i})">UPRAVIT</button>
                     <button class="btn-small btn-delete" onclick="deleteMember(${m.id})">SMAZAT</button>
