@@ -100,7 +100,7 @@
         #global-admin-status {
             display: none;
             position: sticky;
-            top: 82px; /* Těsně pod navbar */
+            top: 82px; 
             z-index: 999;
             background: rgba(0, 255, 65, 0.1);
             backdrop-filter: blur(5px);
@@ -247,7 +247,7 @@
             margin-bottom: 5px;
         }
 
-        /* Modals */
+        /* Modals - VYLEPŠENÝ DESIGN */
         .overlay {
             display: none;
             position: fixed;
@@ -260,19 +260,32 @@
         }
 
         .modal-box {
-            background: var(--card-bg);
-            padding: 30px;
+            background: #111;
+            padding: 35px;
             border-radius: 20px;
-            border: 1px solid var(--dark-green);
+            border: 2px solid var(--primary-green);
             text-align: center;
-            width: 350px;
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+            width: 380px;
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.3);
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         input, select {
-            width: 100%; padding: 12px; margin: 10px 0;
-            background: #222; border: 1px solid var(--dark-green);
+            width: 100%; padding: 14px; margin: 12px 0;
+            background: #1a1a1a; border: 1px solid #333;
             color: white; border-radius: 10px; outline: none;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
         }
 
         footer {
@@ -326,61 +339,68 @@
 
 <div id="pravidla" class="page">
     <h1>Pravidla Serveru</h1>
+    
     <div class="rules-content">
         <div class="rules-section">
             <h2>I. Obecná pravidla a pilíře interakce</h2>
             <ul class="rules-list">
-                <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu.</li>
-                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně.</li>
-                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa.</li>
-                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach.</li>
-                <li><b>Value of Life (VOL)</b> Postava se musí chovat tak, aby primárním cílem bylo přežití.</li>
-                <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce.</li>
-                <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu.</li>
-                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně.</li>
-                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK).</li>
-                <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých zbraní bez odpovídajícího RP popisu.</li>
-                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva.</li>
-                <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy.</li>
-                <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci.</li>
+                <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu (např. ze streamu, Discordu nebo OOC chatu). Postava smí vědět pouze to, co se dozví přímo IC cestou.</li>
+                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně bez možnosti obrany. Patří sem i nadměrné využívání mechanik (např. mluvení v bezvědomí, řízení se čtyřmi prostřelenými pneumatikami).</li>
+                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa. Přenášení reálných sporů do hry, mluvení o herních mechanikách (lagy, FPS, pluginy) přímo do voice chatu.</li>
+                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach. Postava si musí vážit svého života. Pokud je v nevýhodě (přesila, mířící zbraň), musí spolupracovat a neriskovat život zbytečným hrdinstvím.</li>
+                <li><b>Value of Life (VOL)</b> Nadřazené pravidlo k FearRP. Postava se musí chovat tak, aby primárním cílem bylo přežití. To platí i pro situace, kdy na postavu nemíří zbraň přímo, ale situace je vysoce riziková (přestřelka v okolí, hořící budova).</li>
+                <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce (honička, zatýkání, ošetřování, únos).</li>
+                <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu a příběhového podkladu.</li>
+                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně k narážení do jiných vozidel nebo přejíždění osob bez adekvátního důvodu.</li>
+                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK). Hráč si nepamatuje okolnosti své smrti a po určitou dobu se nesmí vrátit na místo, kde k úmrtí došlo.</li>
+                <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých předmětů nebo dlouhých zbraní (pušky, brokovnice) bez odpovídajícího RP popisu (např. vytažení z kufru, batohu přes /me).</li>
+                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva (NPC). Město není prázdné; na veřejných místech jsou kamery, svědci a hlídky.</li>
+                <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy a ztráta majetku. Lze udělit pouze se souhlasem hráče nebo za specifických podmínek (např. poprava v rámci frakce).</li>
+                <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci. Postava zapomíná na události vedoucí k tomuto stavu.</li>
             </ul>
         </div>
+
         <div class="rules-section">
             <h2>II. Komunikační příkazy a Imersivita</h2>
             <ul class="rules-list">
-                <li><b>/me (Action Description)</b> Slouží k popisu činností.</li>
-                <li><b>/do (State Description)</b> Slouží k popisu stavu věci nebo prostředí.</li>
-                <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce.</li>
-                <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany k interakci.</li>
-                <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP.</li>
+                <li><b>/me (Action Description)</b> Slouží k popisu činností, které postava vykonává a které hra graficky neumožňuje (např. /me prohledává muže v oblasti pasu).</li>
+                <li><b>/do (State Description)</b> Slouží k popisu stavu věci, prostředí nebo k dotazování na stav jiné postavy (např. /do Jsou na zemi vidět stopy krve?). V /do je zakázáno lhát.</li>
+                <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce (např. /try vypáčit zámek).</li>
+                <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany (často policie) k interakci, pro kterou postava nemá reálný IC důvod, pouze chce "akci".</li>
+                <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP. Pokud vidíš animaci, nesmíš na ni reagovat, pokud tvoje postava nemá vizuální nebo sluchový vjem dané věci.</li>
             </ul>
         </div>
+
         <div class="rules-section">
-            <h2>III. Nelegální frakce a Engagement</h2>
+            <h2>III. Nelegální frakce a Engagement (Honičky/Střelba)</h2>
             <ul class="rules-list">
-                <li><b>Engagement Timer (10-80 Restrictions)</b> Zakázáno zahájit střelbu dříve než po 10 minutách honičky.</li>
-                <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu.</li>
-                <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu je povolen nejdříve po 15 minutách honičky.</li>
-                <li><b>Fear of High Command</b> Povinný respekt k hierarchii v organizaci.</li>
-                <li><b>Turf Rule (Territory War)</b> Právo bránit své území s jasnou gradací.</li>
-                <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly".</li>
+                <li><b>Engagement Timer (10-80 Restrictions)</b> V rámci interakce se státními složkami (LEO) je zakázáno zahájit střelbu dříve než po 10 minutách od začátku aktivního pronásledování (kódu 10-80). Cílem je dát prostor pro kvalitní honičku.</li>
+                <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu (např. odjezd od vykradeného obchodu/banky). Situace musí gradovat přirozeně a střelba je až krajní řešení.</li>
+                <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu (hory, louky, lesy, prudké svahy) je povolen nejdříve po 15 minutách od zahájení pronásledování nebo odjezdu od místa činu (banka/obchod). Toto pravidlo platí i pro majitele terénních vozidel (SUV, Offroad) a cross motocyklů. Před uplynutím tohoto limitu se musí pronásledovaný držet na zpevněných nebo polních cestách.</li>
+                <li><b>Fear of High Command</b> Povinný respekt k hierarchii. Nižší členové musí mít respekt z vedení své organizace. Neuposlechnutí může vést k internímu trestu či CK.</li>
+                <li><b>Gross Roleplay (Gross RP)</b> RP zahrnující extrémní násilí či mučení. Vyžaduje se předchozí OOC souhlas všech zúčastněných stran.</li>
+                <li><b>Turf Rule (Territory War)</b> Právo bránit své území. Agrese na vlastním území musí mít jasnou gradaci (výzva -> varování -> akce).</li>
+                <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly". Okrádání musí mít příběhový smysl.</li>
             </ul>
         </div>
+
         <div class="rules-section">
-            <h2>IV. Státní složky a K-9</h2>
+            <h2>IV. Státní složky a K-9 (LSPD, BCSO, EMS)</h2>
             <ul class="rules-list">
-                <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu.</li>
-                <li><b>Corruption Policy</b> Korupce musí být schválena vedením.</li>
-                <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě.</li>
-                <li><b>K-9 Deployment Limits</b> Nasazení K-9 musí být podložené.</li>
+                <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu podezřelého (slovní výzva -> taser -> palná zbraň).</li>
+                <li><b>Corruption Policy</b> Jakákoliv forma korupce u státních složek musí být schválena vedením a musí mít hluboký příběhový základ.</li>
+                <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě. Pes je trénovaná zbraň bez strachu; útok na něj bez adekvátního projevu strachu je porušením FearRP.</li>
+                <li><b>K-9 Deployment Limits</b> Psovod zodpovídá za psa. Nasazení K-9 musí být podložené (např. pachová stopa, útěk nebezpečné osoby, aktivní odpor).</li>
+                <li><b>K-9 Injuries</b> Při zranění psa se psovod prioritně věnuje jeho záchraně a ošetření.</li>
             </ul>
         </div>
+
         <div class="rules-section">
             <h2>V. Dopravní pravidla a nehody</h2>
             <ul class="rules-list">
-                <li><b>Non-RP Driving</b> Povinnost řídit realisticky.</li>
-                <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen odehrát zranění.</li>
-                <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu.</li>
+                <li><b>Non-RP Driving</b> Povinnost řídit realisticky. Sportovní a civilní vozy nesmí zdolávat hory nebo skákat z mostů.</li>
+                <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen adekvátně odehrát zranění odpovídající nárazu. Okamžitý útěk nebo střelba po těžké ráně je zakázána.</li>
+                <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu (low flying) a nesmí být používány jako zbraň k narážení.</li>
             </ul>
         </div>
     </div>
@@ -392,9 +412,9 @@
 
 <div id="login-overlay" class="overlay"><div class="modal-box"><h3>ADMIN DUTY</h3><input type="password" id="admin-pass" placeholder="••••••••"><button class="btn-green" style="width: 100%;" onclick="checkAdmin()">POTVRDIT</button><button onclick="closeOverlay('login-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZRUŠIT</button></div></div>
 
-<div id="member-overlay" class="overlay"><div class="modal-box"><h3 id="modal-title">PŘIDAT ČLENA</h3><input type="hidden" id="edit-id"><input type="text" id="member-nick" placeholder="Nickname"><select id="member-role"><optgroup label="Vedení"><option value="Founder">Founder</option><option value="Co-Founder">Co-Founder</option><option value="Managment">Managment</option><option value="Community Managment">Community Managment</option><option value="Head of Staff">Head of Staff</option></optgroup><optgroup label="Admin Team"><option value="Senior Admin">Senior Admin</option><option value="Admin">Admin</option><option value="Trial Admin">Trial Admin</option></optgroup><optgroup label="Developer Team"><option value="Leader Developer">Leader Developer</option><option value="Senior Developer">Senior Developer</option><option value="Junior Developer">Junior Developer</option></optgroup><optgroup label="Allowtester Team"><option value="Head of AL tester">Head of AL tester</option><option value="Senior AL tester">Senior AL tester</option><option value="Trial AL tester">Trial AL tester</option></optgroup></select><button class="btn-green" style="width:100%" onclick="saveMember()">ULOŽIT</button><button onclick="closeOverlay('member-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
+<div id="member-overlay" class="overlay"><div class="modal-box"><h3 id="modal-title">PŘIDAT ČLENA</h3><input type="hidden" id="edit-id"><input type="text" id="member-nick" placeholder="Nickname"><select id="member-role"><optgroup label="Vedení"><option value="Founder">Founder</option><option value="Co-Founder">Co-Founder</option><option value="Managment">Managment</option><option value="Community Managment">Community Managment</option><option value="Head of Staff">Head of Staff</option></optgroup><optgroup label="Admin Team"><option value="Senior Admin">Senior Admin</option><option value="Admin">Admin</option><option value="Trial Admin">Trial Admin</option></optgroup><optgroup label="Developer Team"><option value="Leader Developer">Leader Developer</option><option value="Senior Developer">Senior Developer</option><option value="Junior Developer">Junior Developer</option></optgroup><optgroup label="Allowtester Team"><option value="Head of AL tester">Head of AL tester</option><option value="Senior AL tester">Senior AL tester</option><option value="Trial AL tester">Trial AL tester</option></optgroup></select><button class="btn-green" style="width:100%" onclick="saveMember()">ULOŽIT ČLENA</button><button onclick="closeOverlay('member-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
 
-<div id="photo-overlay" class="overlay"><div class="modal-box"><h3>PŘIDAT FOTKU</h3><input type="text" id="photo-url" placeholder="URL obrázku"><input type="text" id="photo-caption" placeholder="Popis / Výherce"><button class="btn-green" style="width:100%" onclick="savePhoto()">ULOŽIT</button><button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
+<div id="photo-overlay" class="overlay"><div class="modal-box"><h3>PŘIDAT FOTKU</h3><input type="text" id="photo-url" placeholder="URL obrázku (Imgur atd.)"><input type="text" id="photo-caption" placeholder="Popis / Výherce"><button class="btn-green" style="width:100%" onclick="savePhoto()">ULOŽIT FOTKU</button><button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
 
 <div id="notify-overlay" class="overlay"><div class="modal-box"><h3 id="notify-title">UPOZORNĚNÍ</h3><p id="notify-msg"></p><button class="btn-green" style="width:100%" onclick="closeOverlay('notify-overlay')">OK</button></div></div>
 
@@ -469,6 +489,20 @@
     function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
     function customNotify(t, m) { document.getElementById('notify-title').innerText = t; document.getElementById('notify-msg').innerText = m; document.getElementById('notify-overlay').style.display = 'flex'; }
 
+    // --- FUNKCE PRO OTEVŘENÍ MODALŮ (OPRAVA) ---
+    function openAddModal() {
+        document.getElementById('modal-title').innerText = "PŘIDAT ČLENA";
+        document.getElementById('edit-id').value = ""; // Důležité: vyčistit ID, aby neprobíhala editace
+        document.getElementById('member-nick').value = "";
+        document.getElementById('member-overlay').style.display = 'flex';
+    }
+
+    function openPhotoModal() {
+        document.getElementById('photo-url').value = "";
+        document.getElementById('photo-caption').value = "";
+        document.getElementById('photo-overlay').style.display = 'flex';
+    }
+
     async function saveMember() {
         const nick = document.getElementById('member-nick').value;
         const role = document.getElementById('member-role').value;
@@ -500,7 +534,10 @@
     async function deletePhoto(id) { await _supabase.from('gallery').delete().eq('id', id); fetchGallery(); }
 
     function renderTeam() {
-        ['Vedení', 'Admin', 'Developer', 'Allowtester'].forEach(s => document.getElementById(`grid-${s}`).innerHTML = "");
+        ['Vedení', 'Admin', 'Developer', 'Allowtester'].forEach(s => {
+            const el = document.getElementById(`grid-${s}`);
+            if(el) el.innerHTML = "";
+        });
         teamData.sort((a, b) => (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99));
         teamData.forEach((m, i) => {
             let cat = "Allowtester";
@@ -517,7 +554,8 @@
                     <button class="btn-small btn-delete" onclick="deleteMember(${m.id})">SMAZAT</button>
                 </div>
             `;
-            document.getElementById(`grid-${cat}`).appendChild(card);
+            const grid = document.getElementById(`grid-${cat}`);
+            if(grid) grid.appendChild(card);
         });
     }
 
