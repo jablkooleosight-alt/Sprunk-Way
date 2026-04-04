@@ -36,7 +36,7 @@
             transform: translate(-50%, -50%);
             width: 600px;
             height: 600px;
-            background-image: url('https://i.imgur.com/your-logo-url.png'); /* ZDE VLOŽ ODKAZ NA LOGO */
+            background-image: url('https://i.imgur.com/your-logo-url.png'); 
             background-repeat: no-repeat;
             background-position: center;
             background-size: contain;
@@ -50,7 +50,7 @@
             display: flex;
             justify-content: center;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -90,11 +90,35 @@
             box-shadow: 0 0 15px var(--primary-green);
         }
 
-        /* Styl pro odhlášení v navbaru */
         .btn-logout-nav {
             background: linear-gradient(45deg, #b30000, var(--danger)) !important;
             color: white !important;
-            box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+        }
+
+        /* GLOBÁLNÍ ADMIN STATUS BAR */
+        #global-admin-status {
+            display: none;
+            position: sticky;
+            top: 82px; /* Těsně pod navbar */
+            z-index: 999;
+            background: rgba(0, 255, 65, 0.1);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--primary-green);
+            color: var(--primary-green);
+            padding: 8px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: inset 0 0 5px rgba(0, 255, 65, 0.2); opacity: 0.8; }
+            50% { box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.4); opacity: 1; }
+            100% { box-shadow: inset 0 0 5px rgba(0, 255, 65, 0.2); opacity: 0.8; }
         }
 
         /* Sekce */
@@ -223,14 +247,11 @@
             margin-bottom: 5px;
         }
 
-        /* Admin Overlay & Modals */
+        /* Modals */
         .overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             z-index: 3000;
@@ -246,49 +267,21 @@
             text-align: center;
             width: 350px;
             box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
-            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalPop {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #222;
-            border: 1px solid var(--dark-green);
-            color: white;
-            box-sizing: border-box;
-            outline: none;
-            border-radius: 10px;
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: #222; border: 1px solid var(--dark-green);
+            color: white; border-radius: 10px; outline: none;
         }
 
-        /* Footer Copyright */
         footer {
-            text-align: center;
-            padding: 20px;
-            color: #555;
-            font-size: 0.8rem;
-            border-top: 1px solid #111;
-            margin-top: auto;
+            text-align: center; padding: 20px; color: #444; font-size: 0.8rem; border-top: 1px solid #111; margin-top: auto;
         }
 
-        #add-member-trigger, #add-photo-trigger, #admin-banner {
+        #add-member-trigger, #add-photo-trigger {
             display: none;
             margin-bottom: 20px;
-        }
-
-        #admin-banner {
-            background: rgba(0, 255, 65, 0.05);
-            border: 1px solid var(--dark-green);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            color: var(--primary-green);
         }
 
     </style>
@@ -297,12 +290,14 @@
 
 <nav>
     <button onclick="showPage('o-nas')" id="btn-o-nas" class="active">O NÁS</button>
-    <button onclick="showPage('tym')">NÁŠ TÝM</button>
-    <button onclick="showPage('galerie')">GALERIE</button>
-    <button onclick="showPage('pravidla')">PRAVIDLA</button>
+    <button onclick="showPage('tym')" id="btn-tym">NÁŠ TÝM</button>
+    <button onclick="showPage('galerie')" id="btn-galerie">GALERIE</button>
+    <button onclick="showPage('pravidla')" id="btn-pravidla">PRAVIDLA</button>
     <button onclick="window.open('https://odkaz-na-zakonik.cz', '_blank')">ZÁKONÍK</button>
     <button id="auth-btn" class="btn-green" onclick="handleAuthClick()">ADMIN DUTY</button>
 </nav>
+
+<div id="global-admin-status">● Režim úprav aktivní (Admin Duty) ●</div>
 
 <div id="o-nas" class="page active">
     <h1>Vítejte v <span style="color: var(--primary-green);">SprunkWay</span></h1>
@@ -310,107 +305,80 @@
 </div>
 
 <div id="tym" class="page">
-    <div id="admin-banner">● PRÁVĚ JSI V ADMIN DUTY</div>
     <h1>Náš Tým</h1>
-
     <div id="add-member-trigger">
         <button class="btn-green" onclick="openAddModal()">+ PŘIDAT ČLENA</button>
     </div>
-    
-    <div id="section-Vedení">
-        <h3>Vedení Projektu</h3>
-        <div class="team-grid" id="grid-Vedení"></div>
-    </div>
-
-    <div id="section-Admin">
-        <h3>Admin Team</h3>
-        <div class="team-grid" id="grid-Admin"></div>
-    </div>
-
-    <div id="section-Developer">
-        <h3>Developer Team</h3>
-        <div class="team-grid" id="grid-Developer"></div>
-    </div>
-
-    <div id="section-Allowtester">
-        <h3>Allowtesters</h3>
-        <div class="team-grid" id="grid-Allowtester"></div>
-    </div>
+    <div id="section-Vedení"><h3>Vedení Projektu</h3><div class="team-grid" id="grid-Vedení"></div></div>
+    <div id="section-Admin"><h3>Admin Team</h3><div class="team-grid" id="grid-Admin"></div></div>
+    <div id="section-Developer"><h3>Developer Team</h3><div class="team-grid" id="grid-Developer"></div></div>
+    <div id="section-Allowtester"><h3>Allowtesters</h3><div class="team-grid" id="grid-Allowtester"></div></div>
 </div>
 
 <div id="galerie" class="page">
     <h1>Vítězné Fotografie</h1>
     <p>Zde najdete nejlepší snímky z našich pravidelných foto-soutěží.</p>
-    
     <div id="add-photo-trigger">
         <button class="btn-green" onclick="openPhotoModal()">+ PŘIDAT FOTKU</button>
     </div>
-
     <div class="gallery-grid" id="gallery-grid"></div>
 </div>
 
 <div id="pravidla" class="page">
     <h1>Pravidla Serveru</h1>
-    
     <div class="rules-content">
         <div class="rules-section">
             <h2>I. Obecná pravidla a pilíře interakce</h2>
             <ul class="rules-list">
-                <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu (např. ze streamu, Discordu nebo OOC chatu). Postava smí vědět pouze to, co se dozví přímo IC cestou.</li>
-                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně bez možnosti obrany. Patří sem i nadměrné využívání mechanik.</li>
-                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa. Přenášení reálných sporů do hry.</li>
-                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach. Postava si musí vážit svého života.</li>
+                <li><b>Metagaming (Information Out of Character)</b> Využívání informací v RP, které jsi získal mimo herní postavu.</li>
+                <li><b>Powergaming (Forcing Roleplay)</b> Provádění úkonů, které jsou nereálné, nebo vnucování výsledku akce druhé straně.</li>
+                <li><b>Mixing (Mixing IC and OOC)</b> Míchání herního a mimohračního světa.</li>
+                <li><b>FearRP (Fear Roleplay)</b> Povinnost adekvátně projevovat strach.</li>
                 <li><b>Value of Life (VOL)</b> Postava se musí chovat tak, aby primárním cílem bylo přežití.</li>
                 <li><b>Combat Logging (Leaving During Roleplay)</b> Úmyslné odpojení ze hry během probíhající interakce.</li>
                 <li><b>RDM (Random Deathmatch)</b> Napadení nebo zabití jiného hráče bez předchozího, pádného RP důvodu.</li>
-                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně k narážení do osob.</li>
-                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK). Hráč si nepamatuje okolnosti své smrti.</li>
+                <li><b>VDM (Vehicle Deathmatch)</b> Použití vozidla jako zbraně.</li>
+                <li><b>NLR (New Life Rule)</b> Pravidlo nového života po smrti postavy (PK).</li>
                 <li><b>Asspulling (Non-RP Weapon Draw)</b> Vytahování velkých zbraní bez odpovídajícího RP popisu.</li>
-                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva (NPC).</li>
+                <li><b>Passive RP (Environment Presence)</b> Povinnost brát v potaz existenci "neviditelného" obyvatelstva.</li>
                 <li><b>Character Kill (CK)</b> Trvalá smrt postavy, po které následuje smazání postavy.</li>
                 <li><b>Player Kill (PK)</b> Stav, kdy je postava v bezvědomí a "umírá" pouze pro danou situaci.</li>
             </ul>
         </div>
-
         <div class="rules-section">
             <h2>II. Komunikační příkazy a Imersivita</h2>
             <ul class="rules-list">
-                <li><b>/me (Action Description)</b> Slouží k popisu činností, které postava vykonává.</li>
-                <li><b>/do (State Description)</b> Slouží k popisu stavu věci nebo prostředí. V /do je zakázáno lhát.</li>
+                <li><b>/me (Action Description)</b> Slouží k popisu činností.</li>
+                <li><b>/do (State Description)</b> Slouží k popisu stavu věci nebo prostředí.</li>
                 <li><b>/try (Action Attempt)</b> Slouží k vyhodnocení úspěchu či neúspěchu náhodné akce.</li>
                 <li><b>Meta-Baiting</b> Úmyslné provokování druhé strany k interakci.</li>
                 <li><b>Script-Play</b> Hraní na mechaniky (scripty) místo na RP.</li>
             </ul>
         </div>
-
         <div class="rules-section">
-            <h2>III. Nelegální frakce a Engagement (Honičky/Střelba)</h2>
+            <h2>III. Nelegální frakce a Engagement</h2>
             <ul class="rules-list">
                 <li><b>Engagement Timer (10-80 Restrictions)</b> Zakázáno zahájit střelbu dříve než po 10 minutách honičky.</li>
                 <li><b>Immediate Escalation Prohibited</b> Je přísně zakázáno zahajovat střelbu ihned po opuštění místa činu.</li>
                 <li><b>Off-road Pursuit Policy</b> Únik do těžkého terénu je povolen nejdříve po 15 minutách honičky.</li>
                 <li><b>Fear of High Command</b> Povinný respekt k hierarchii v organizaci.</li>
-                <li><b>Gross Roleplay (Gross RP)</b> RP zahrnující extrémní násilí. Vyžaduje se předchozí OOC souhlas.</li>
                 <li><b>Turf Rule (Territory War)</b> Právo bránit své území s jasnou gradací.</li>
                 <li><b>Robbing Limits (Looting Rules)</b> Zákaz kompletního okrádání hráčů "do nuly".</li>
             </ul>
         </div>
-
         <div class="rules-section">
-            <h2>IV. Státní složky a K-9 (LSPD, BCSO, EMS)</h2>
+            <h2>IV. Státní složky a K-9</h2>
             <ul class="rules-list">
                 <li><b>Force Continuum (Scalation of Force)</b> Povinnost policie stupňovat sílu adekvátně k odporu.</li>
                 <li><b>Corruption Policy</b> Korupce musí být schválena vedením.</li>
                 <li><b>Dog Fear (K-9 Awareness)</b> Postava musí ke služebnímu psu přistupovat jako k extrémní hrozbě.</li>
-                <li><b>K-9 Deployment Limits</b> Nasazení K-9 musí být podložené (pachová stopa atd.).</li>
-                <li><b>K-9 Injuries</b> Při zranění psa se psovod prioritně věnuje jeho záchraně.</li>
+                <li><b>K-9 Deployment Limits</b> Nasazení K-9 musí být podložené.</li>
             </ul>
         </div>
-
         <div class="rules-section">
             <h2>V. Dopravní pravidla a nehody</h2>
             <ul class="rules-list">
-                <li><b>Non-RP Driving</b> Povinnost řídit realisticky. Sportovní vozy nesmí zdolávat hory.</li>
+                <li><b>Non-RP Driving</b> Povinnost řídit realisticky.</li>
                 <li><b>Accident Roleplay (Car Crash)</b> Po nehodě je hráč povinen odehrát zranění.</li>
                 <li><b>Air Support Limits</b> Vrtulníky nesmí létat nízko nad městem bez důvodu.</li>
             </ul>
@@ -419,70 +387,16 @@
 </div>
 
 <footer>
-    &copy; 2026 SprunkWay RP | Všechna práva vyhrazena.
+    &copy; 2026 SprunkWay RP | Všechna práva vyhrazena. | Design by Gemini
 </footer>
 
-<div id="login-overlay" class="overlay">
-    <div class="modal-box">
-        <h3>ADMIN DUTY</h3>
-        <p style="color: #888; font-size: 0.9rem;">Zadejte autorizační kód</p>
-        <input type="password" id="admin-pass" placeholder="••••••••">
-        <button class="btn-green" style="width: 100%;" onclick="checkAdmin()">POTVRDIT</button>
-        <button onclick="closeOverlay('login-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZRUŠIT</button>
-    </div>
-</div>
+<div id="login-overlay" class="overlay"><div class="modal-box"><h3>ADMIN DUTY</h3><input type="password" id="admin-pass" placeholder="••••••••"><button class="btn-green" style="width: 100%;" onclick="checkAdmin()">POTVRDIT</button><button onclick="closeOverlay('login-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZRUŠIT</button></div></div>
 
-<div id="member-overlay" class="overlay">
-    <div class="modal-box">
-        <h3 id="modal-title">PŘIDAT ČLENA</h3>
-        <input type="hidden" id="edit-id" value="">
-        <input type="text" id="member-nick" placeholder="Nickname člena">
-        <select id="member-role">
-            <optgroup label="Vedení">
-                <option value="Founder">Founder</option>
-                <option value="Co-Founder">Co-Founder</option>
-                <option value="Managment">Managment</option>
-                <option value="Community Managment">Community Managment</option>
-                <option value="Head of Staff">Head of Staff</option>
-            </optgroup>
-            <optgroup label="Admin Team">
-                <option value="Senior Admin">Senior Admin</option>
-                <option value="Admin">Admin</option>
-                <option value="Trial Admin">Trial Admin</option>
-            </optgroup>
-            <optgroup label="Developer Team">
-                <option value="Leader Developer">Leader Developer</option>
-                <option value="Senior Developer">Senior Developer</option>
-                <option value="Junior Developer">Junior Developer</option>
-            </optgroup>
-            <optgroup label="Allowtester Team">
-                <option value="Head of AL tester">Head of AL tester</option>
-                <option value="Senior AL tester">Senior AL tester</option>
-                <option value="Trial AL tester">Trial AL tester</option>
-            </optgroup>
-        </select>
-        <button class="btn-green" style="width: 100%;" onclick="saveMember()">ULOŽIT</button>
-        <button onclick="closeOverlay('member-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button>
-    </div>
-</div>
+<div id="member-overlay" class="overlay"><div class="modal-box"><h3 id="modal-title">PŘIDAT ČLENA</h3><input type="hidden" id="edit-id"><input type="text" id="member-nick" placeholder="Nickname"><select id="member-role"><optgroup label="Vedení"><option value="Founder">Founder</option><option value="Co-Founder">Co-Founder</option><option value="Managment">Managment</option><option value="Community Managment">Community Managment</option><option value="Head of Staff">Head of Staff</option></optgroup><optgroup label="Admin Team"><option value="Senior Admin">Senior Admin</option><option value="Admin">Admin</option><option value="Trial Admin">Trial Admin</option></optgroup><optgroup label="Developer Team"><option value="Leader Developer">Leader Developer</option><option value="Senior Developer">Senior Developer</option><option value="Junior Developer">Junior Developer</option></optgroup><optgroup label="Allowtester Team"><option value="Head of AL tester">Head of AL tester</option><option value="Senior AL tester">Senior AL tester</option><option value="Trial AL tester">Trial AL tester</option></optgroup></select><button class="btn-green" style="width:100%" onclick="saveMember()">ULOŽIT</button><button onclick="closeOverlay('member-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
 
-<div id="photo-overlay" class="overlay">
-    <div class="modal-box">
-        <h3>PŘIDAT FOTKU</h3>
-        <input type="text" id="photo-url" placeholder="URL obrázku">
-        <input type="text" id="photo-caption" placeholder="Popis / Výherce">
-        <button class="btn-green" style="width: 100%;" onclick="savePhoto()">ULOŽIT FOTKU</button>
-        <button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button>
-    </div>
-</div>
+<div id="photo-overlay" class="overlay"><div class="modal-box"><h3>PŘIDAT FOTKU</h3><input type="text" id="photo-url" placeholder="URL obrázku"><input type="text" id="photo-caption" placeholder="Popis / Výherce"><button class="btn-green" style="width:100%" onclick="savePhoto()">ULOŽIT</button><button onclick="closeOverlay('photo-overlay')" style="background:none; border:none; color:#555; cursor:pointer; margin-top:15px;">ZAVŘÍT</button></div></div>
 
-<div id="notify-overlay" class="overlay">
-    <div class="modal-box" style="width: 250px;">
-        <h3 id="notify-title">UPOZORNĚNÍ</h3>
-        <p id="notify-msg"></p>
-        <button class="btn-green" style="width: 100%;" onclick="closeOverlay('notify-overlay')">OK</button>
-    </div>
-</div>
+<div id="notify-overlay" class="overlay"><div class="modal-box"><h3 id="notify-title">UPOZORNĚNÍ</h3><p id="notify-msg"></p><button class="btn-green" style="width:100%" onclick="closeOverlay('notify-overlay')">OK</button></div></div>
 
 <script>
     const SUPABASE_URL = 'https://rruizvfftwmenfcliwvk.supabase.co'; 
@@ -499,77 +413,54 @@
         "Junior Developer": 11, "Head of AL tester": 12, "Senior AL tester": 13, "Trial AL tester": 14
     };
 
-    window.onload = () => {
-        fetchTeam();
-        fetchGallery();
-    };
+    window.onload = () => { fetchTeam(); fetchGallery(); };
 
-    async function fetchTeam() {
-        const { data } = await _supabase.from('team_members').select('*');
-        teamData = data || [];
-        renderTeam();
-    }
-
-    async function fetchGallery() {
-        const { data } = await _supabase.from('gallery').select('*').order('created_at', { ascending: false });
-        galleryData = data || [];
-        renderGallery();
-    }
+    async function fetchTeam() { const { data } = await _supabase.from('team_members').select('*'); teamData = data || []; renderTeam(); }
+    async function fetchGallery() { const { data } = await _supabase.from('gallery').select('*').order('created_at', { ascending: false }); galleryData = data || []; renderGallery(); }
 
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        if (window.event && window.event.currentTarget.tagName === "BUTTON") window.event.currentTarget.classList.add('active');
+        const btn = document.getElementById('btn-' + pageId);
+        if (btn) btn.classList.add('active');
     }
 
-    // --- OPRAVENÉ ODHLÁŠENÍ V NAVBARU ---
     function handleAuthClick() {
-        if (isAdmin) {
-            logoutAdmin();
-        } else {
-            document.getElementById('login-overlay').style.display = 'flex';
-            document.getElementById('admin-pass').focus();
-        }
+        if (isAdmin) logoutAdmin();
+        else { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
     }
 
     function checkAdmin() {
-        const code = document.getElementById('admin-pass').value;
-        if (code === "25032026") {
+        if (document.getElementById('admin-pass').value === "25032026") {
             isAdmin = true;
             closeOverlay('login-overlay');
             updateAdminUI();
-            customNotify("Úspěch", "Admin Duty aktivní.");
-        } else {
-            customNotify("Chyba", "Špatný kód.");
-        }
+            customNotify("Úspěch", "Admin Duty aktivní na celém webu.");
+        } else { customNotify("Chyba", "Špatný kód."); }
         document.getElementById('admin-pass').value = '';
     }
 
-    function logoutAdmin() {
-        isAdmin = false;
-        updateAdminUI();
-        customNotify("Odhlášeno", "Admin Duty ukončena.");
-    }
+    function logoutAdmin() { isAdmin = false; updateAdminUI(); customNotify("Odhlášeno", "Admin Duty ukončena."); }
 
     function updateAdminUI() {
         const authBtn = document.getElementById('auth-btn');
         const addBtnTeam = document.getElementById('add-member-trigger');
         const addBtnPhoto = document.getElementById('add-photo-trigger');
-        const banner = document.getElementById('admin-banner');
+        const globalStatus = document.getElementById('global-admin-status');
 
         if(isAdmin) {
             authBtn.innerText = "ODHLÁSIT (ADMIN)";
             authBtn.classList.add('btn-logout-nav');
             addBtnTeam.style.display = 'block';
             addBtnPhoto.style.display = 'block';
-            banner.style.display = 'block';
+            globalStatus.style.display = 'block';
         } else {
             authBtn.innerText = "ADMIN DUTY";
             authBtn.classList.remove('btn-logout-nav');
             addBtnTeam.style.display = 'none';
             addBtnPhoto.style.display = 'none';
-            banner.style.display = 'none';
+            globalStatus.style.display = 'none';
         }
         renderTeam();
         renderGallery();
@@ -578,14 +469,6 @@
     function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
     function customNotify(t, m) { document.getElementById('notify-title').innerText = t; document.getElementById('notify-msg').innerText = m; document.getElementById('notify-overlay').style.display = 'flex'; }
 
-    // --- TEAM LOGIC ---
-    function openAddModal() {
-        document.getElementById('modal-title').innerText = "PŘIDAT ČLENA";
-        document.getElementById('edit-id').value = "";
-        document.getElementById('member-nick').value = "";
-        document.getElementById('member-overlay').style.display = 'flex';
-    }
-
     async function saveMember() {
         const nick = document.getElementById('member-nick').value;
         const role = document.getElementById('member-role').value;
@@ -593,43 +476,31 @@
         if(!nick) return;
         if(editId) await _supabase.from('team_members').update({ nickname: nick, role: role }).eq('id', editId);
         else await _supabase.from('team_members').insert([{ nickname: nick, role: role }]);
-        closeOverlay('member-overlay');
-        fetchTeam();
+        closeOverlay('member-overlay'); fetchTeam();
     }
 
     function editMember(index) {
-        const member = teamData[index];
+        const m = teamData[index];
         document.getElementById('modal-title').innerText = "UPRAVIT ČLENA";
-        document.getElementById('edit-id').value = member.id;
-        document.getElementById('member-nick').value = member.nickname;
-        document.getElementById('member-role').value = member.role;
+        document.getElementById('edit-id').value = m.id;
+        document.getElementById('member-nick').value = m.nickname;
+        document.getElementById('member-role').value = m.role;
         document.getElementById('member-overlay').style.display = 'flex';
     }
 
-    async function deleteMember(id) {
-        await _supabase.from('team_members').delete().eq('id', id);
-        fetchTeam();
-    }
+    async function deleteMember(id) { await _supabase.from('team_members').delete().eq('id', id); fetchTeam(); }
 
-    // --- PHOTO LOGIC ---
-    function openPhotoModal() { document.getElementById('photo-overlay').style.display = 'flex'; }
     async function savePhoto() {
         const url = document.getElementById('photo-url').value;
         const cap = document.getElementById('photo-caption').value;
         if(!url) return;
         await _supabase.from('gallery').insert([{ image_url: url, caption: cap }]);
-        closeOverlay('photo-overlay');
-        fetchGallery();
+        closeOverlay('photo-overlay'); fetchGallery();
     }
-    async function deletePhoto(id) {
-        await _supabase.from('gallery').delete().eq('id', id);
-        fetchGallery();
-    }
+    async function deletePhoto(id) { await _supabase.from('gallery').delete().eq('id', id); fetchGallery(); }
 
-    // --- RENDERING ---
     function renderTeam() {
-        const sections = ['Vedení', 'Admin', 'Developer', 'Allowtester'];
-        sections.forEach(s => document.getElementById(`grid-${s}`).innerHTML = "");
+        ['Vedení', 'Admin', 'Developer', 'Allowtester'].forEach(s => document.getElementById(`grid-${s}`).innerHTML = "");
         teamData.sort((a, b) => (rolePriority[a.role] || 99) - (rolePriority[b.role] || 99));
         teamData.forEach((m, i) => {
             let cat = "Allowtester";
@@ -656,13 +527,7 @@
         galleryData.forEach(p => {
             const card = document.createElement('div');
             card.className = 'photo-card';
-            card.innerHTML = `
-                <img src="${p.image_url}">
-                <div class="photo-info">
-                    <div style="color:var(--primary-green);font-weight:bold;">${p.caption || 'Bez popisu'}</div>
-                    ${isAdmin ? `<button class="btn-small btn-delete" onclick="deletePhoto(${p.id})" style="margin-top:10px;">SMAZAT</button>` : ''}
-                </div>
-            `;
+            card.innerHTML = `<img src="${p.image_url}"><div class="photo-info"><div style="color:var(--primary-green);font-weight:bold;">${p.caption || 'Bez popisu'}</div>${isAdmin ? `<button class="btn-small btn-delete" onclick="deletePhoto(${p.id})" style="margin-top:10px;">SMAZAT</button>` : ''}</div>`;
             grid.appendChild(card);
         });
     }
